@@ -2,11 +2,9 @@ package com.mallikarjun.portfolios.controller;
 
 import com.mallikarjun.portfolios.model.PortfolioProfile;
 import com.mallikarjun.portfolios.service.PortfolioService;
+import com.mallikarjun.portfolios.service.externalAPI.StockService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -15,6 +13,7 @@ import reactor.core.publisher.Mono;
 public class PortfolioConntroller {
 
     private final PortfolioService portfolioService;
+    private final StockService stockService;
 
     @GetMapping("get/all")
     public Flux<?> getAllPortfolios() {
@@ -26,5 +25,11 @@ public class PortfolioConntroller {
     public Mono<?> createPortfolio(@RequestBody PortfolioProfile portfolioProfile) {
         return portfolioService.createPortfolio(portfolioProfile);
 //        return Mono.just("Portfolio created");
+    }
+
+    @GetMapping("/stock/quote/{symbol}")
+    public Mono<?> getStockQuote(@PathVariable String symbol) {
+        System.out.println("Fetching stock quote for symbol: " + symbol);
+        return stockService.getStockQuote(symbol);
     }
 }
