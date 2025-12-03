@@ -1,13 +1,13 @@
-package com.mallikarjun.user_mngt;
+package com.mallikarjun.portfolios;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class UserMngtApplication {
+public class PortfoliosApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(UserMngtApplication.class, args);
+		SpringApplication.run(PortfoliosApplication.class, args);
 	}
 
 }
