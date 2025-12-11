@@ -4,17 +4,21 @@ import com.mallikarjun.portfolios.model.Portfolio;
 import com.mallikarjun.portfolios.model.Stocks;
 import com.mallikarjun.portfolios.model.request.PortfolioRequest;
 import com.mallikarjun.portfolios.repository.PortfolioRepository;
+import com.mallikarjun.portfolios.service.externalAPI.FinHubService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+import static reactor.core.publisher.Flux.just;
+
 @Service
 @RequiredArgsConstructor
 public class PortfolioService {
 
     private final PortfolioRepository portfolioRepository;
+    private final FinHubService finHubService;
 
 
     public Mono<Portfolio> createPortfolio(PortfolioRequest portfolioRequest) {
@@ -57,5 +61,20 @@ public class PortfolioService {
 
     public Mono<Portfolio> getPortfoliosByUserId(String userId) {
         return portfolioRepository.getByUserId(userId);
+    }
+
+    public Mono<?> getDailyPerformance(String portfolioId) {
+        Mono<Portfolio> portfolioById = getPortfolioById(portfolioId);
+        portfolioById.subscribe(portfolio -> {
+            portfolio.getStocksList().forEach(stock -> {
+                finHubService.stockQuote(stock.getIsin()).subscribe(response -> {
+                    System.out.println("Stock data for ISIN " + stock.getIsin() + ": " + response.toString());
+                });
+            });
+        });
+
+        return Mono.just("Daily performance data fetch initiated for portfolio: " + portfolioId);
+
+
     }
 }

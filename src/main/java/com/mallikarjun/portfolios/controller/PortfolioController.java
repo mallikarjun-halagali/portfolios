@@ -30,5 +30,10 @@ public class PortfolioController {
         return portfolioService.getPortfoliosByUserId(userId);
     }
 
+    @GetMapping("/daily-performance/{portfolioId}")
+    public Mono<?> getDailyPerformance(@PathVariable String portfolioId){
+        return portfolioService.getDailyPerformance(portfolioId);
+    }
+
 
 }
