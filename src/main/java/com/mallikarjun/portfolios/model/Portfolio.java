@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -17,11 +19,12 @@ public class Portfolio {
     private Double investedValue;
     private Double currentValue;
 //    private Double totalValue;
-    private Long lastUpdated;
+    private Instant lastUpdated;
     private Double dailyChange;
+    private Double profitLoss;
     private List<Stocks> stocksList;
 
-    private Double dailyChangePercent;
+    private String dailyChangePercent;
     private String currency = "Rupees";
     //    private Integer sqlPortfolioId;
 }

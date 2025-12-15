@@ -35,7 +35,7 @@ public class StockController {
     public Mono<?> getStockPrices(@PathVariable String stockSymbol) {
         // Here you would typically call a service to handle the business logic
         // For this example, we'll just return a confirmation message
-        return finHubService.getStockSymbol(stockSymbol);
+        return finHubService.searchStockSymbol(stockSymbol);
     }
 
     @GetMapping("/featch/all")
