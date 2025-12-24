@@ -1,10 +1,14 @@
 package com.mallikarjun.portfolios.config;
 
+import io.github.resilience4j.ratelimiter.RateLimiter;
+import io.github.resilience4j.reactor.ratelimiter.operator.RateLimiterOperator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Configuration
 public class WebClientConfig {
@@ -32,10 +36,18 @@ public class WebClientConfig {
     }
 
     @Bean
-    public WebClient finnhubWebClient() {
-        return WebClient.builder().baseUrl(finnhubBaseUrl)
-                .defaultHeader("X-Finnhub-Token",finnHubApiKey)
+    public WebClient finnhubWebClient(RateLimiter finnhubRateLimiter) {
+        return WebClient.builder()
+                .baseUrl(finnhubBaseUrl)
+                .defaultHeader("X-Finnhub-Token", finnHubApiKey)
+                .filter(rateLimiterFilter(finnhubRateLimiter))
                 .build();
+    }
+
+    private ExchangeFilterFunction rateLimiterFilter(RateLimiter rateLimiter) {
+        return (request, next) ->
+                next.exchange(request)
+                        .transformDeferred(RateLimiterOperator.of(rateLimiter));
     }
 
 }

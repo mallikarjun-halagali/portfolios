@@ -3,6 +3,7 @@ package com.mallikarjun.portfolios.service.externalAPI;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.mallikarjun.portfolios.model.FinHubStockQuote;
 import com.mallikarjun.portfolios.model.FinHubStocks;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -71,7 +72,11 @@ public class FinHubService {
                                 ))
                 )
                 .bodyToMono(FinHubStockQuote.class)
-                .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(2)).jitter(0.5).doAfterRetry(retrySignal -> log.info("retrying...")))
+                .retryWhen(
+                        Retry.fixedDelay(3, Duration.ofSeconds(2))
+                                .filter(ex -> !(ex instanceof RequestNotPermitted))
+                                .doAfterRetry(r -> log.warn("Retrying Finnhub call..."))
+                )
                 .doOnNext(quote -> stockQuoteCache.put(isin, quote))
                 .timeout(Duration.ofSeconds(30));
     }
