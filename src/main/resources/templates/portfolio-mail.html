@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f6f8;
+          padding: 16px;
+        }
+        .container {
+          max-width: 650px;
+          margin: auto;
+          background: #ffffff;
+          padding: 20px;
+          border-radius: 8px;
+        }
+        .metric {
+          display: inline-block;
+          width: 48%;
+          margin-bottom: 6px;
+        }
+        .positive { color: #16a34a; font-weight: bold; }
+        .negative { color: #dc2626; font-weight: bold; }
+
+        details {
+          margin-top: 10px;
+          border: 1px solid #e5e7eb;
+          border-radius: 6px;
+          padding: 10px;
+          background: #fafafa;
+        }
+        summary {
+          cursor: pointer;
+          font-weight: bold;
+          color: #1d4ed8;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h2>📊 Portfolio Summary – <span th:text="${portfolio.name}"></span></h2>
+
+    <div class="metric">💰 Invested: ₹<span th:text="${portfolio.investedValue}"></span></div>
+    <div class="metric">📈 Current: ₹<span th:text="${portfolio.currentValue}"></span></div>
+
+    <div class="metric">
+        🔄 Daily:
+        <span th:text="${portfolio.dailyChange}"
+              th:classappend="${portfolio.dailyChange >= 0} ? 'positive' : 'negative'">
+    </span>
+    </div>
+
+    <div class="metric">
+        🟢 P/L:
+        <span th:text="${portfolio.profitLoss}"
+              th:classappend="${portfolio.profitLoss >= 0} ? 'positive' : 'negative'">
+    </span>
+    </div>
+
+    <p>🕒 Last Updated:
+        <span th:text="${#dates.format(portfolio.lastUpdated, 'dd MMM yyyy HH:mm')}"></span>
+    </p>
+
+    <hr/>
+
+    <!-- STOCK LOOP -->
+    <div th:each="stock : ${portfolio.stocksList}">
+        <h3 th:text="${stock.stockName}"></h3>
+
+        <!-- Visible summary -->
+        <p th:text="${stock.summary}"></p>
+
+        <!-- Expandable -->
+        <details>
+            <summary>🔍 View Detailed Insights</summary>
+
+            <p><strong>📉 Market Noise</strong></p>
+            <p th:text="${stock.marketNoise.summary}"></p>
+
+            <p><strong>🧾 Fundamental News</strong></p>
+            <ul>
+                <li th:each="news : ${stock.fundamentalNews}">
+                    <strong th:text="${news.synthesis}"></strong>:
+                    <span th:text="${news.details}"></span>
+                </li>
+            </ul>
+        </details>
+
+        <hr/>
+    </div>
+
+    <p style="font-size:12px;color:#6b7280">
+        ⚠ AI-generated insights. For informational purposes only.
+    </p>
+
+</div>
+</body>
+</html>

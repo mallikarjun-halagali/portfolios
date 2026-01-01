@@ -35,12 +35,19 @@ public class WebClientConfig {
                 .build();
     }
 
-    @Bean
+    @Bean(name = "finnhubWebClient")
     public WebClient finnhubWebClient(RateLimiter finnhubRateLimiter) {
         return WebClient.builder()
                 .baseUrl(finnhubBaseUrl)
                 .defaultHeader("X-Finnhub-Token", finnHubApiKey)
                 .filter(rateLimiterFilter(finnhubRateLimiter))
+                .build();
+    }
+
+    @Bean(name = "webClient")
+    public WebClient webClient() {
+        return WebClient.builder()
+                .baseUrl("http://localhost:8080/ai/")
                 .build();
     }
 
