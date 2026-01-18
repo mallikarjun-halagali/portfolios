@@ -97,6 +97,12 @@ public class PortfolioService {
     }
 
     public Mono<Portfolio> getPortfoliosByUserId(String userId) {
+
+        String str = switch (userId) {
+            case "abc","xyz" -> "matched";
+            default ->  "not matched";
+        };
+        
         return portfolioRepository.getByUserId(userId);
     }
 
@@ -209,4 +215,14 @@ public class PortfolioService {
         return new Portfolio();
     }
 
+    public Mono<String> updatePortfolio(Portfolio portfolio) {
+        return portfolioRepository.findByPortfolioId(portfolio.getPortfolioId())
+                .flatMap(existing -> {
+                    existing.setStocksList(portfolio.getStocksList());
+//                    existing.setPortfolioName(portfolio.getPortfolioName());
+                    portfolioRepository.deleteById(existing.getId()).subscribe();
+                    return portfolioRepository.save(existing);
+                })
+                .then(Mono.just("redirect:/portfolio/" + portfolio.getPortfolioId()));
+    }
 }

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Portfolio</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #1e3a8a, #2563eb);
+            padding: 80px 20px;
+            color: white;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .card {
+            background: #f8fafc;
+            color: #0f172a;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 13px;
+            margin-top: 8px;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5f5;
+        }
+
+        button {
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .save {
+            background: #16a34a;
+            color: white;
+        }
+
+        .add {
+            background: #2563eb;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .remove {
+            background: #dc2626;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            margin-top: 6px;
+        }
+    </style>
+
+    <script th:inline="javascript">
+        // Initialize index to the size of stocksList, or 0 if null
+        let index = [[${portfolio.stocksList != null ? #lists.size(portfolio.stocksList) : 0}]];
+
+        function addStock() {
+            const container = document.getElementById("stocks");
+            const html = `
+                <div class="card" id="stock-card-${index}">
+                    <label>ISIN</label>
+                    <input type="text" name="stocksList[${index}].isin">
+
+                    <label>Name</label>
+                    <input type="text" name="stocksList[${index}].name">
+
+                    <label>Quantity</label>
+                    <input type="number" name="stocksList[${index}].quantity">
+
+                    <label>Avg Price</label>
+                    <input type="number" step="0.01" name="stocksList[${index}].averagePrice">
+
+                    <button type="button" class="remove" onclick="removeStock(${index})">Remove</button>
+                </div>
+            `;
+            container.insertAdjacentHTML("beforeend", html);
+            index++;
+        }
+
+        function removeStock(idx) {
+            const el = document.getElementById("stock-card-" + idx);
+            if(el) el.remove();
+        }
+    </script>
+
+</head>
+
+<body>
+<div class="container">
+
+    <h2>Edit Portfolio Stocks</h2>
+
+    <form th:action="@{/portfolio/update}" method="post">
+
+        <!-- Portfolio ID -->
+        <input type="hidden" name="portfolioId" th:value="${portfolio.portfolioId}" />
+
+        <!-- Container for existing + new stocks -->
+        <div id="stocks">
+
+            <!-- Existing Stocks -->
+            <div th:each="stock, i : ${portfolio.stocksList}" class="card"
+                 th:id="'stock-card-' + ${i.index}">
+
+                <label>ISIN</label>
+                <input type="text" th:name="|stocksList[${i.index}].isin|" th:value="${stock.isin}" />
+
+                <label>Name</label>
+                <input type="text" th:name="|stocksList[${i.index}].name|" th:value="${stock.name}" />
+
+                <label>Quantity</label>
+                <input type="number" th:name="|stocksList[${i.index}].quantity|" th:value="${stock.quantity}" />
+
+                <label>Avg Price</label>
+                <input type="number" step="0.01" th:name="|stocksList[${i.index}].averagePrice|" th:value="${stock.averagePrice}" />
+
+                <button type="button" class="remove" th:onclick="'removeStock(' + ${i.index} + ')'">Remove</button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Add new stock -->
+        <button type="button" class="add" onclick="addStock()">+ Add Stock</button>
+
+        <br><br>
+
+        <!-- Save -->
+        <button type="submit" class="save">Save Changes</button>
+
+    </form>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Portfolio</title>
+
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background: linear-gradient(to right, #1e3a8a, #2563eb);
+          color: white;
+          text-align: center;
+          padding-top: 120px;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+        }
+        .card {
+            background: #f8fafc;   /* very light gray */
+            color: #0f172a;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        h2 {
+            margin-bottom: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 6px;
+            margin-bottom: 12px;
+        }
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .primary {
+            background: #2563eb;
+            color: white;
+            width: 100%;
+        }
+        .secondary {
+            background: #e5e7eb;
+        }
+        .danger {
+            background: #dc2626;
+            color: white;
+        }
+        .stock-row {
+            border-left: 4px solid #2563eb;
+            padding-left: 12px;
+            margin-bottom: 12px;
+        }
+    </style>
+
+    <script>
+        let stockIndex = 0;
+
+        function addStock() {
+            const container = document.getElementById("stocks-container");
+
+            const html = `
+            <div class="card stock-row" id="stock-${stockIndex}">
+                <h4>Stock</h4>
+
+                <label>ISIN</label>
+                <input type="text" name="stocks[${stockIndex}].isin" required>
+
+                <label>Stock Name</label>
+                <input type="text" name="stocks[${stockIndex}].name" required>
+
+                <label>Quantity</label>
+                <input type="number" name="stocks[${stockIndex}].quantity" min="1" required>
+
+                <label>Invested Value</label>
+                <input type="number" name="stocks[${stockIndex}].investedValue" step="0.01" required>
+
+                <button type="button" class="danger" onclick="removeStock(${stockIndex})">
+                    Remove Stock
+                </button>
+            </div>
+            `;
+
+            container.insertAdjacentHTML("beforeend", html);
+            stockIndex++;
+        }
+
+        function removeStock(index) {
+            const el = document.getElementById("stock-" + index);
+            if (el) el.remove();
+        }
+    </script>
+</head>
+
+<body>
+<div class="container">
+
+    <!-- PORTFOLIO DETAILS -->
+    <div class="card">
+        <h2>Create Portfolio</h2>
+
+        <form th:action="@{/portfolio/create}" method="post">
+
+            <label>User ID</label>
+            <input type="text" name="userId" required>
+
+            <label>Portfolio Name</label>
+            <input type="text" name="portfolioName" required>
+
+            <!-- portfolioId auto-generated in backend -->
+            <input type="hidden" name="portfolioId">
+
+            <!-- STOCKS -->
+            <h3>Stocks (Optional)</h3>
+
+            <div id="stocks-container"></div>
+
+            <button type="button" class="secondary" onclick="addStock()">
+                 Add Stock
+            </button>
+
+            <br><br>
+
+            <button type="submit" class="primary">
+                 Create Portfolio
+            </button>
+
+        </form>
+    </div>
+
+</div>
+</body>
+</html>

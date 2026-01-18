@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Portfolio Created</title>
+</head>
+<body style="font-family:Arial;padding:40px;background:#f9fafb;">
+<div style="max-width:600px;margin:auto;background:white;padding:24px;border-radius:8px;">
+    <h2>✅ Portfolio Created Successfully</h2>
+
+    <p><strong>Name:</strong> <span th:text="${portfolio.name}"></span></p>
+    <p><strong>Portfolio ID:</strong> <span th:text="${portfolio.portfolioId}"></span></p>
+    <p><strong>Invested Value:</strong> ₹<span th:text="${portfolio.investedValue}"></span></p>
+
+    <a href="/" style="color:#2563eb;">← Back to Home</a>
+</div>
+</body>
+</html>

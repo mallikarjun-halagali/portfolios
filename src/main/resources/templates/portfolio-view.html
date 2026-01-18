@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Portfolio Overview</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(to right, #1e3a8a, #2563eb);
+            color: white;
+            padding: 100px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        /* ===== Card ===== */
+        .card {
+            background: #f8fafc;
+            color: #0f172a;
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        /* ===== Headings ===== */
+        .card h2,
+        .card h3 {
+            color: #1e3a8a;
+            margin-bottom: 16px;
+        }
+
+        /* ===== Meta info ===== */
+        .meta {
+            color: #475569;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* ===== Metrics ===== */
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .metric-box {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .metric-value {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 6px;
+        }
+
+        /* ===== Profit / Loss ===== */
+        .positive {
+            color: #16a34a;
+        }
+
+        .negative {
+            color: #dc2626;
+        }
+
+        /* ===== Table ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: #e0e7ff;
+        }
+
+        th {
+            padding: 12px;
+            font-size: 13px;
+            text-align: left;
+            color: #1e3a8a;
+        }
+
+        td {
+            padding: 12px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f1f5f9;
+        }
+
+        td.number {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ===== Empty ===== */
+        .empty {
+            color: #64748b;
+            font-style: italic;
+        }
+        .meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+}
+
+.edit-btn {
+    padding: 8px 14px;
+    background: #2563eb;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    white-space: nowrap;
+}
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <!-- ===================== -->
+    <!-- PORTFOLIO SUMMARY -->
+    <!-- ===================== -->
+    <div class="card">
+
+        <h2>
+            Portfolio <span th:text="${portfolio.name}"></span>
+        </h2>
+
+        <div class="meta">
+            User: <span th:text="${portfolio.userId}"></span>
+            Portfolio ID: <span th:text="${portfolio.portfolioId}"></span>
+        </div>
+
+        <div class="metrics">
+
+            <div class="metric-box">
+                <div class="metric-label">Invested</div>
+                <div class="metric-value">
+                    <span th:text="${portfolio.investedValue}"></span>
+                    <span th:text="${portfolio.currency}"></span>
+                </div>
+            </div>
+
+            <div class="metric-box">
+                <div class="metric-label">Current Value</div>
+                <div class="metric-value">
+                    <span th:text="${portfolio.currentValue}"></span>
+                    <span th:text="${portfolio.currency}"></span>
+                </div>
+            </div>
+
+            <div class="metric-box">
+                <div class="metric-label">Daily Change</div>
+                <div class="metric-value"
+                     th:classappend="${portfolio.dailyChange >= 0} ? 'positive' : 'negative'">
+                    <span th:text="${portfolio.dailyChange}"></span>
+                    (<span th:text="${portfolio.dailyChangePercent}"></span>)
+                </div>
+            </div>
+
+            <div class="metric-box">
+                <div class="metric-label">Profit / Loss</div>
+                <div class="metric-value"
+                     th:classappend="${portfolio.profitLoss >= 0} ? 'positive' : 'negative'">
+                    <span th:text="${portfolio.profitLoss}"></span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="meta-row">
+            <div class="meta">
+                Last Updated:
+                <span th:text="${#temporals.format(portfolio.lastUpdated, 'dd MMM yyyy HH:mm')}"></span>
+            </div>
+
+            <a th:href="@{/portfolio/{id}/edit(id=${portfolio.portfolioId})}"
+               class="edit-btn">
+                Edit Stocks
+            </a>
+        </div>
+
+
+    </div>
+
+    <!-- ===================== -->
+    <!-- STOCKS TABLE -->
+    <!-- ===================== -->
+    <div class="card">
+
+        <h3>Stocks</h3>
+
+
+        <!-- Empty state -->
+        <p th:if="${#lists.isEmpty(portfolio.stocksList)}"
+           class="empty">
+            No stocks added to this portfolio.
+        </p>
+
+        <!-- Table -->
+        <table th:if="${!#lists.isEmpty(portfolio.stocksList)}">
+            <thead>
+            <tr>
+                <th>ISIN</th>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th class="number">Invested Value</th>
+                <th class="number">Avg Price</th>
+                <th class="number">Current Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="stock : ${portfolio.stocksList}">
+                <td th:text="${stock.isin}"></td>
+                <td th:text="${stock.name}"></td>
+                <td th:text="${stock.quantity}"></td>
+                <td class="number" th:text="${stock.investedValue}"></td>
+                <td class="number" th:text="${stock.averagePrice}"></td>
+                <td class="number" th:text="${stock.currentValue}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+</body>
+</html>

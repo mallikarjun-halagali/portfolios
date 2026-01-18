@@ -19,6 +19,9 @@ public class WebClientConfig {
     @Value("${finnhub.api-key}")
     private String finnHubApiKey;
 
+    @Value("${api.base.url}")
+    private String apiBaseUrl;
+
 //    @Bean
 //    public WebClient yahooClient(WebClient.Builder webClientBuilder) {
 //        return webClientBuilder
@@ -47,7 +50,7 @@ public class WebClientConfig {
     @Bean(name = "webClient")
     public WebClient webClient() {
         return WebClient.builder()
-                .baseUrl("http://localhost:8080/ai/")
+                .baseUrl(apiBaseUrl)
                 .build();
     }
 

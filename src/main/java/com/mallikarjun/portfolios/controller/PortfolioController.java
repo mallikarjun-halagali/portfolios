@@ -2,8 +2,10 @@ package com.mallikarjun.portfolios.controller;
 
 import com.mallikarjun.portfolios.model.Portfolio;
 import com.mallikarjun.portfolios.model.request.PortfolioRequest;
+import com.mallikarjun.portfolios.service.ApiSchedulerService;
 import com.mallikarjun.portfolios.service.PortfolioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -13,6 +15,7 @@ import reactor.core.publisher.Mono;
 public class PortfolioController {
 
     private final PortfolioService portfolioService;
+    private final ApiSchedulerService apiSchedulerService;
 
     @PostMapping("/create")
     public Mono<Portfolio> createPortfolio(@RequestBody PortfolioRequest portfolio) {
@@ -33,6 +36,11 @@ public class PortfolioController {
     @GetMapping("/daily-performance/{portfolioId}")
     public Mono<?> getDailyPerformance(@PathVariable String portfolioId){
         return portfolioService.getDailyPerformance(portfolioId);
+    }
+
+    @PostMapping("/run-daily-api")
+    public Mono<Void> runDailyApi() {
+        return apiSchedulerService.dailyApiCallReactive();
     }
 
 

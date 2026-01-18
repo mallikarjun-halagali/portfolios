@@ -20,8 +20,6 @@ public class StockService {
     private final FinHubRepository finHubRepository;
 
     public List<Stocks> updateStocks(StocksRequest stockRequest) {
-
-
         return null;
     }
 
@@ -29,8 +27,6 @@ public class StockService {
         AtomicInteger count = new AtomicInteger();
 
         return finHubRepository.saveAll(finHubService.getAllStocks());
-
-
 
     }
 }
